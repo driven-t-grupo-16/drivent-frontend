@@ -1,10 +1,16 @@
-export default function Payment() {
+import Typography from '@mui/material/Typography';
+import styled from 'styled-components';
+import useEnrollment from '../../../hooks/api/useEnrollment';
+import { Container } from '@mui/material';
 
+export default function Payment() {
+  const { enrollment } = useEnrollment();
   function teste(){
     console.log("oiii");
+    console.log(enrollment)
   }
   
-  return (
+  return (enrollment ? 
     <>
       <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
       <SubTitle>Primeiro, escolha sua modalidade de ingresso</SubTitle>
@@ -34,6 +40,16 @@ export default function Payment() {
         <TextButton>RESERVAR INGRESSO</TextButton>
       </ConfirmButton>
     </>
+    :
+    <>
+      <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
+      <ContainerText>
+        <SubTitle>
+          Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso
+        </SubTitle>
+      </ContainerText>
+        
+    </>
     
   );
 }
@@ -43,9 +59,16 @@ const StyledTypography = styled(Typography)`
   margin-bottom: 20px!important;
 `;
 
+const ContainerText = styled.div`
+margin: auto;
+height: 400px;
+text-align: center;
+display: flex;
+align-items: center;`;
+
 const SubTitle = styled(Typography)`
   color: #8E8E8E;
-  font-size: 20px;
+  font-size:  20px !important;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
