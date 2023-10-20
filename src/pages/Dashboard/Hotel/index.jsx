@@ -44,7 +44,6 @@ export default function Hotel() {
       {(hotelSelected != 0) && <HotelRooms/>} 
     </>
   );
-
 }
 
 const StyledTypography = styled(Typography)`
