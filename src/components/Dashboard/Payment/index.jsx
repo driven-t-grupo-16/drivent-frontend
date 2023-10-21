@@ -1,77 +1,48 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useEffect } from "react";
 import styled from "styled-components"
 
-export function CardButton({price, text, setTicketType, setIncludesHotel, ticketType, includesHotel}) {
-  const [isTypeSelected, setIsTypeSelected] = useState(false);
+export function CardButton({price, text, setTicketType, setIncludesHotel, ticketType, includesHotel, setTotal}) {
+
+  const isSelected = ticketType === text || (text === 'Com hotel' && includesHotel === true) 
+    || (text === 'Sem hotel' && includesHotel === false);
+
+    function setData() {
+      if (text === 'Presencial' || text === 'Online') {
+        if (!isSelected) {
+          setTicketType(text);
+          setIncludesHotel(null);
+        } else {
+          setTicketType('');
+        }
+      } else if (text === 'Com hotel' || text === 'Sem hotel') {
+        if (!isSelected) {
+          setIncludesHotel(text === 'Com hotel' ? true : false);
+        }
+      }
+
+    }
+
+    useEffect(() => {
+      let newTotal = 0;
   
-  function setData() {
-    if(text === 'Presencial'|| text === 'Online') {
-      if(ticketType === '') {
-        if(text === 'Presencial') {
-        setTicketType('Presencial');
-        setIsTypeSelected(true)
-        }
-        else if (text === 'Online') {
-          setTicketType('Online');
-          setIsTypeSelected(true);
-        }
+      if (ticketType === 'Presencial') {
+        newTotal += 250;
+      } else if (ticketType === 'Online') {
+        newTotal += 100;
       }
+  
+      if (includesHotel === true) {
+        newTotal = 600;
+      } else if (includesHotel === false) {
+        newTotal = 250;
+      }
+  
+      setTotal(newTotal);
+    }, [ticketType, includesHotel, setTotal]);
 
-      if(ticketType === 'Presencial') {
-        if(text === 'Presencial' && includesHotel !== null) {
-          setTicketType('');
-          setIsTypeSelected(false);
-          setIncludesHotel(null)
-        }
-        else if (text === 'Online' ) {
-          setTicketType('Online');
-          setIsTypeSelected(true);
-          setIncludesHotel(null)
-        }
-      }
-
-      if(ticketType === 'Online'){
-        if (text === 'Presencial') {
-          setTicketType('Presencial');
-          setIsTypeSelected(true);
-        }
-        else if (text === 'Online') {
-          setTicketType('');
-          setIsTypeSelected(false);
-        }
-      }
-      
-      else if(text === 'Online' && ticketType === 'Presencial') {
-        setTicketType('Online');
-        setIsTypeSelected(true);
-      }
-    }
-    else {
-      if(text === 'Com hotel' && includesHotel === null) {
-        setIncludesHotel(true)
-        setIsTypeSelected(true)
-      }
-      else if(text === 'Com hotel' && includesHotel === true) {
-        setIncludesHotel(null)
-        setIsTypeSelected(true)
-      }
-      else if(text === 'Com hotel' && includesHotel === false) {
-        setIncludesHotel(true)
-      }
-      else if(text === 'Sem hotel' && includesHotel === null) {
-        setIncludesHotel(false)
-      }
-      else if(text === 'Sem hotel' && includesHotel === false) {
-        setIncludesHotel(null)
-      }
-      else if(text === 'Sem hotel' && includesHotel === true) {
-        setIncludesHotel(false)
-      }
-    }
-  }
   return (
-    <Card onClick={()=> setData()} selected={isTypeSelected}>
+    <Card onClick={()=> setData()} isSelected={isSelected} text={text}>
       <p>{text}</p>
       <span>R${price}</span>
     </Card>
@@ -93,7 +64,7 @@ const Card = styled.button`
   line-height: normal;
   text-align: center;
   cursor: pointer;
-  background-color: ${props => props.selected  ? '#FFEED2' : 'transparent'};
+  background-color: ${props => props.isSelected ? '#FFEED2' : 'transparent'};
   p{
     color: #454545;
     font-size: 16px;

@@ -4,34 +4,69 @@ import styled from 'styled-components';
 import useEnrollment from '../../../hooks/api/useEnrollment';
 import { CardButton } from '../../../components/Dashboard/Payment';
 import { useState } from 'react';
-import { getTicketTypes, getTickets } from '../../../services/ticketApi';
+import { createTicket} from '../../../services/ticketApi';
 import useToken from '../../../hooks/useToken';
 
 export default function Payment() {
   const { enrollment } = useEnrollment();
-  const [ticketType, setTicketType] = useState('')
-  const [includesHotel, setIncludesHotel] = useState(null)
-  const [total, setTotal] = useState(0)
-  const token = useToken()
+  const [ticketType, setTicketType] = useState('');
+  const [includesHotel, setIncludesHotel] = useState(null);
+  const [total, setTotal] = useState(0);
+  const token = useToken();
 
-  function teste(){
-    console.log("oiii");
+  async function bookTickect(){
+    if(ticketType === 'Online'){
+      console.log(1);
+      console.log(await createTicket(token, 1));
+    }else if(ticketType === 'Presencial' && includesHotel === false){
+      console.log(2);
+      console.log(await createTicket(token, 2));
+    }else if(ticketType === 'Presencial' && includesHotel === true){
+      console.log(3);
+      console.log(await createTicket(token, 3));
+    }
   }
-  console.log(ticketType)
-  console.log(includesHotel)
+
+  
   return (enrollment ? (
     <>
       <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
-      <SubTitle onClick={async () => console.log(await getTickets(token))}>Primeiro, escolha sua modalidade de ingresso</SubTitle>
+      <SubTitle>Primeiro, escolha sua modalidade de ingresso</SubTitle>
       <ContainerCard>
-        <CardButton setTicketType={setTicketType} setIncludesHotel={setIncludesHotel} ticketType={ticketType} text='Presencial' price={200} />
-        <CardButton setTicketType={setTicketType} setIncludesHotel={setIncludesHotel} ticketType={ticketType} text='Online' price={100} />
+        <CardButton
+          total = {total}
+          setTotal = {setTotal}
+          setTicketType={setTicketType} 
+          setIncludesHotel={setIncludesHotel} 
+          ticketType={ticketType} 
+          text='Presencial' 
+          price={250} />
+        <CardButton
+          total = {total}
+          setTotal = {setTotal}
+          setTicketType={setTicketType} 
+          setIncludesHotel={setIncludesHotel} 
+          ticketType={ticketType} 
+          text='Online' 
+          price={100} />
       </ContainerCard>
       {ticketType === 'Presencial' ? (<>
         <SubTitle>Ótimo! Agora escolha sua modalidade de hospedagem</SubTitle>
         <ContainerCard>
-          <CardButton setIncludesHotel={setIncludesHotel} includesHotel={includesHotel} text='Sem hotel' price={0} />
-          <CardButton setIncludesHotel={setIncludesHotel} includesHotel={includesHotel} text='Com hotel' price={150} />
+          <CardButton
+            total = {total}
+            setTotal = {setTotal} 
+            setIncludesHotel={setIncludesHotel} 
+            includesHotel={includesHotel} 
+            text='Sem hotel' 
+            price={0} />
+          <CardButton
+            total = {total}
+            setTotal = {setTotal}
+            setIncludesHotel={setIncludesHotel} 
+            includesHotel={includesHotel} 
+            text='Com hotel'
+            price={350} />
         </ContainerCard>
       </>) : null
       }
@@ -39,13 +74,13 @@ export default function Payment() {
       (<>
         <SubTitle>Fechado! O total ficou em <span>R$ {total}</span>. Agora é só confirmar:</SubTitle>
         <ConfirmButton>
-          <TextButton>RESERVAR INGRESSO</TextButton>
+          <TextButton onClick={() => bookTickect()}>RESERVAR INGRESSO</TextButton>
         </ConfirmButton>
       </>) : includesHotel !== null && 
       (<>
         <SubTitle>Fechado! O total ficou em <span>R$ {total}</span>. Agora é só confirmar:</SubTitle>
         <ConfirmButton>
-          <TextButton>RESERVAR INGRESSO</TextButton>
+          <TextButton onClick={() => bookTickect()}>RESERVAR INGRESSO</TextButton>
         </ConfirmButton>
       </>)}
     </>)
