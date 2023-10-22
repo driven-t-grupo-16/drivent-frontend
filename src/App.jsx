@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import {
   BrowserRouter as Router,
   Routes,
@@ -11,7 +12,7 @@ import Enroll from './pages/Enroll';
 import SignIn from './pages/SignIn';
 import Dashboard from './pages/Dashboard';
 import FillSubscription from './pages/Dashboard/FillSubscription';
-import Payment from './pages/Dashboard/Payment/indexVinni'
+import Payment from './pages/Dashboard/Payment/index';
 import Hotel from './pages/Dashboard/Hotel';
 import Activities from './pages/Dashboard/Activities';
 import Certificate from './pages/Dashboard/Certificate';
