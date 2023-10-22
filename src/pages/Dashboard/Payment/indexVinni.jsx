@@ -1,14 +1,38 @@
-import Typography from '@mui/material/Typography';
+import { CardButton } from '../../../components/Dashboard/Payment';
 import useEnrollment from '../../../hooks/api/useEnrollment';
 import 'react-credit-cards-2/dist/es/styles-compiled.css';
+import { createTicket } from '../../../services/ticketApi';
+import { createPayment } from "../../../services/paymentApi"
 import useTicket from '../../../hooks/api/useTicket';
+import Typography from '@mui/material/Typography';
+import { FaCheckCircle } from 'react-icons/fa';
+import useToken from '../../../hooks/useToken';
 import Cards from 'react-credit-cards-2';
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { toast } from 'react-toastify';
 
 export default function Payment() {
   const { enrollment } = useEnrollment();
-  const { ticket } = useTicket();
+  const [ticketType, setTicketType] = useState('');
+  const [includesHotel, setIncludesHotel] = useState(null);
+  const [total, setTotal] = useState(0);
+  const token = useToken();
+  let { ticket } = useTicket();
+
+
+  async function bookTickect() {
+    if (ticketType === 'Online') {
+      console.log(1);
+      console.log(await createTicket(token, 1));
+    } else if (ticketType === 'Presencial' && includesHotel === false) {
+      console.log(2);
+      console.log(await createTicket(token, 2));
+    } else if (ticketType === 'Presencial' && includesHotel === true) {
+      console.log(3);
+      console.log(await createTicket(token, 3));
+    }
+  }
 
   const ticketMock = {
     id: 1,
@@ -26,12 +50,6 @@ export default function Payment() {
     },
     createdAt: new Date().getDay(),
     updatedAt: new Date().getDay(),
-  }
-
-  function teste() {
-    console.log("oiii");
-    console.log(enrollment)
-    console.log(ticket)
   }
 
   const PaymentForm = () => {
@@ -53,8 +71,35 @@ export default function Payment() {
       setState((prev) => ({ ...prev, focus: evt.target.name }));
     }
 
+    const handlePayment = (e) => {
+      e.preventDefault();
+      if (state.number.length !== 16) { return toast('Por favor use 16 dígitos para o cartão') }
+      if (state.name === '') { return toast('Por favor Insira seu nome') }
+      if (state.expiry.length !== 4) { return toast('Por favor use 4 dígitos para a data de vencimento') }
+      if (Number(state.expiry.substring(0, 2)) <= 0 || Number(state.expiry.substring(0, 2)) >= 13) {
+        return toast('Mês invalido para data de vencimento');
+      }
+      if (Number(state.expiry.substring(2, 4)) < 23) { return toast('Ano invalido para data de vencimento') }
+      if (state.cvc.length !== 3) { return toast('Por favor use 3 dígitos para o cvc') }
+
+      toast('processando pagamento')
+      const payload = {
+        ticketId: ticket.id,
+        cardData: {
+          issuer: "issuer",
+          number: state.number,
+          name: state.name,
+          expirationDate: state.expiry,
+          cvv: state.cvc,
+        }
+      };
+
+      createPayment(token, payload);
+      setTimeout(window.location.reload(), 1000 );
+    }
+
     return (
-      <div style={{ display: "flex", flexDirection: 'row', width: '290px' }} >
+      <div style={{ display: "flex", flexDirection: 'row', width: '290px', position: "relative" }} >
         <Cards
           number={state.number}
           expiry={state.expiry}
@@ -62,7 +107,7 @@ export default function Payment() {
           name={state.name}
           focused={state.focus}
         />
-        <form style={{
+        <form onSubmit={() => { (e) => handlePayment(e) }} style={{
           padding: "10px",
           display: 'flex',
           flexWrap: 'wrap',
@@ -94,14 +139,13 @@ export default function Payment() {
             E.g.: 49..., 51..., 36..., 37...
           </p>
 
-          <input
-            style={{
-              width: '250px',
-              height: '30px',
-              border: '1px lightgray solid',
-              borderRadius: '8px',
-              paddingLeft: '10px'
-            }}
+          <input style={{
+            width: '250px',
+            height: '30px',
+            border: '1px lightgray solid',
+            borderRadius: '8px',
+            paddingLeft: '10px'
+          }}
             type="text"
             name="name"
             placeholder="Name"
@@ -110,14 +154,13 @@ export default function Payment() {
             onFocus={handleInputFocus}
           />
 
-          <input
-            style={{
-              width: '140px',
-              height: '30px',
-              border: '1px lightgray solid',
-              borderRadius: '8px',
-              paddingLeft: '10px'
-            }}
+          <input style={{
+            width: '140px',
+            height: '30px',
+            border: '1px lightgray solid',
+            borderRadius: '8px',
+            paddingLeft: '10px'
+          }}
             type="number"
             name="expiry"
             placeholder="Valid Thru"
@@ -125,14 +168,13 @@ export default function Payment() {
             onChange={handleInputChange}
             onFocus={handleInputFocus}
           />
-          <input
-            style={{
-              width: '100px',
-              height: '30px',
-              border: '1px lightgray solid',
-              borderRadius: '8px',
-              paddingLeft: '10px'
-            }}
+          <input style={{
+            width: '100px',
+            height: '30px',
+            border: '1px lightgray solid',
+            borderRadius: '8px',
+            paddingLeft: '10px'
+          }}
             type="number"
             name="cvc"
             placeholder="CVC"
@@ -140,18 +182,22 @@ export default function Payment() {
             onChange={handleInputChange}
             onFocus={handleInputFocus}
           />
+          <ConfirmButton style={{ position: 'absolute', left: '10px', top: '180px' }}>
+            <TextButton onClick={(e) => handlePayment(e)}>RESERVAR INGRESSO</TextButton>
+          </ConfirmButton>
         </form>
       </div>
     );
   }
 
   return (
-    ticketMock.status === "RESERVED" ?
+    ticket ? (ticket.status === "RESERVED" ?
+      /* Ticket reserved: Payment Form */
       <>
         <SubTitle> Ingresso escolhido </SubTitle>
         <Card_Selected>
-          <p>{!ticketMock.TicketType.isRemote ? (ticketMock.TicketType.includesHotel ? "Presencial + Com hotel" : "Presencial + Sem hotel") : "Online"}</p>
-          <span>R$ {(ticketMock.TicketType.price) / 100}</span>
+          <p>{!ticket.TicketType.isRemote ? (ticket.TicketType.includesHotel ? "Presencial + Com hotel" : "Presencial + Sem hotel") : "Online"}</p>
+          <span>R$ {(ticket.TicketType.price)}</span>
         </Card_Selected>
         <SubTitle> Pagamento </SubTitle>
         <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -159,37 +205,79 @@ export default function Payment() {
         </div>
 
       </> :
+      /* Ticket Paid: see details */
+      <>
+        <SubTitle> Ingresso escolhido </SubTitle>
+        <Card_Selected>
+          <p>{!ticket.TicketType.isRemote ? (ticket.TicketType.includesHotel ? "Presencial + Com hotel" : "Presencial + Sem hotel") : "Online"}</p>
+          <span>R$ {(ticket.TicketType.price)}</span>
+        </Card_Selected>
+        <SubTitle style={{ marginTop: '10px' }}> Pagamento </SubTitle>
+        <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'row', gap: '10px', alignItems: 'center' }}>
+          <FaCheckCircle fontSize="50px" color='green' />
+          <p>
+            Pagamento confirmado! <br />
+            Prossiga para escolha de hospedagem e atividades
+          </p>
+        </div>
+      </>) : /* No ticket reserved yet */
       (enrollment ?
         <>
           <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
           <SubTitle>Primeiro, escolha sua modalidade de ingresso</SubTitle>
           <ContainerCard>
-            <Card onClick={() => teste()}>
-              <p>Presencial</p>
-              <span>R$ 200</span>
-            </Card>
-            <Card>
-              <p>Online</p>
-              <span>R$ 100</span>
-            </Card>
+            <CardButton
+              total={total}
+              setTotal={setTotal}
+              setTicketType={setTicketType}
+              setIncludesHotel={setIncludesHotel}
+              ticketType={ticketType}
+              text='Presencial'
+              price={250} />
+            <CardButton
+              total={total}
+              setTotal={setTotal}
+              setTicketType={setTicketType}
+              setIncludesHotel={setIncludesHotel}
+              ticketType={ticketType}
+              text='Online'
+              price={100} />
           </ContainerCard>
-          <SubTitle>Ótimo! Agora escolha sua modalidade de hospedagem</SubTitle>
-          <ContainerCard>
-            <Card>
-              <p>Sem Hotel</p>
-              <span>+R$ 0</span>
-            </Card>
-            <Card>
-              <p>Com Hotel</p>
-              <span>+R$ 150</span>
-            </Card>
-          </ContainerCard>
-          <SubTitle>Fechado! O total ficou em <span>R$ 600</span>. Agora é só confirmar:</SubTitle>
-          <ConfirmButton>
-            <TextButton>RESERVAR INGRESSO</TextButton>
-          </ConfirmButton>
+          {ticketType === 'Presencial' ? (<>
+            <SubTitle>Ótimo! Agora escolha sua modalidade de hospedagem</SubTitle>
+            <ContainerCard>
+              <CardButton
+                total={total}
+                setTotal={setTotal}
+                setIncludesHotel={setIncludesHotel}
+                includesHotel={includesHotel}
+                text='Sem hotel'
+                price={0} />
+              <CardButton
+                total={total}
+                setTotal={setTotal}
+                setIncludesHotel={setIncludesHotel}
+                includesHotel={includesHotel}
+                text='Com hotel'
+                price={350} />
+            </ContainerCard>
+          </>) : null
+          }
+          {ticketType === 'Online' ?
+            (<>
+              <SubTitle>Fechado! O total ficou em <span>R$ {total}</span>. Agora é só confirmar:</SubTitle>
+              <ConfirmButton>
+                <TextButton onClick={() => bookTickect()}>RESERVAR INGRESSO</TextButton>
+              </ConfirmButton>
+            </>) : includesHotel !== null &&
+            (<>
+              <SubTitle>Fechado! O total ficou em <span>R$ {total}</span>. Agora é só confirmar:</SubTitle>
+              <ConfirmButton>
+                <TextButton onClick={() => bookTickect()}>RESERVAR INGRESSO</TextButton>
+              </ConfirmButton>
+            </>)}
         </>
-        :
+        : /* No Enrollment */
         <>
           <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
           <ContainerText>
@@ -199,7 +287,6 @@ export default function Payment() {
           </ContainerText>
 
         </>
-
       ));
 }
 
