@@ -29,28 +29,28 @@ export default function NavigationBar() {
       </Link>
 
       <Link to="/dashboard/payment">
-        <NavigationButton active={isActive('/dashboard/payment')}>
+        <NavigationButton active={isActive('/dashboard/paymen')}>
           <FaMoneyBill />
           <span>Pagamento</span>
         </NavigationButton>
       </Link>
 
       <Link to="/dashboard/hotel">
-        <NavigationButton active={isActive('/dashboard/hotel')}>
+        <NavigationButton active={isActive('/dashboard/hote')}>
           <FaBed />
           <span>Hotel</span>
         </NavigationButton>
       </Link>
 
       <Link to="/dashboard/activities">
-        <NavigationButton active={isActive('/dashboard/activities')}>
+        <NavigationButton active={isActive('/dashboard/activitie')}>
           <FaCalendarWeek />
           <span>Atividades</span>
         </NavigationButton>
       </Link>
 
       <Link to="/dashboard/certificate">
-        <NavigationButton active={isActive('/dashboard/certificate')}>
+        <NavigationButton active={isActive('/dashboard/certificat')}>
           <FaCertificate />
           <span>Certificado</span>
         </NavigationButton>
