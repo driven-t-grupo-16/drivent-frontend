@@ -3,8 +3,7 @@ import styled from "styled-components";
 
 
 export function HotelCards({ hotel, hotelSelected, setHotelSelected }) {
-
-
+  console.log(hotelSelected);
   const toggleSelection = (id) => {
     if (id == hotelSelected) return setHotelSelected(0);
     setHotelSelected(id);
@@ -26,12 +25,12 @@ export const HotelCard = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background-color: ${props => (props.selected == props.id) ? '#FFEED2' : '#EBEBEB'};
+  background-color: ${props => (props.selected == undefined) ? "#FFEED2" : (props.selected == props.id) ? '#FFEED2' : '#EBEBEB'};
   width: 196px;
   height: 264px;
   padding: 16px 14px 0;
   border-radius: 10px;
-  cursor: pointer;
+  cursor: ${props => (props.selected == props.id) ? 'default' : 'pointer'};
   
   > img {
     width: 168px;
