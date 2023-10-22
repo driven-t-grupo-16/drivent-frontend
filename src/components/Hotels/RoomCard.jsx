@@ -43,7 +43,7 @@ export default function RoomCard({ room, setRoomSelected, roomSelected }) {
     return (
         <CardRoom
             id={room.id}
-            fullcapacity={(fullColor(room.capacity, room.occupiedVacancies))}
+            fullcapacity={fullColor(room.capacity, room.occupiedVacancies)}
             selected={isSelected(room.id, roomSelected)}
             onClick={selectRoom}
         >
