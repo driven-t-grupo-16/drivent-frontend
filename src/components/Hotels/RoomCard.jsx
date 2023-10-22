@@ -2,7 +2,6 @@ import styled from "styled-components";
 import { BsFillPersonFill, BsPerson } from 'react-icons/bs';
 
 export default function RoomCard({ room, setRoomSelected, roomSelected }) {
-
     function renderCapacityIcons(capacity, occupiedVacancies) {
         const isFull = capacity === occupiedVacancies;
         const selected = isSelected(room.id, roomSelected);
@@ -34,7 +33,7 @@ export default function RoomCard({ room, setRoomSelected, roomSelected }) {
         return false;
     }
     function selectRoom() {
-        if (room.capacity !== room.occupiedVacancies) {
+        if (room.capacity !== room.Booking.length) {
             if (room.id === roomSelected) return setRoomSelected(0);
             setRoomSelected(room.id);
         }
@@ -43,12 +42,12 @@ export default function RoomCard({ room, setRoomSelected, roomSelected }) {
     return (
         <CardRoom
             id={room.id}
-            fullcapacity={(fullColor(room.capacity, room.occupiedVacancies))}
+            fullcapacity={(fullColor(room.capacity, room.Booking.length))}
             selected={isSelected(room.id, roomSelected)}
             onClick={selectRoom}
         >
-            <h1>{room.number}</h1>
-            {renderCapacityIcons(room.capacity, room.occupiedVacancies)}
+            <h1>{room.id}</h1>
+            {renderCapacityIcons(room.capacity, room.Booking.length)}
         </CardRoom>
     );
 }

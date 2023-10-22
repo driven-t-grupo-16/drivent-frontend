@@ -3,34 +3,44 @@ import styled from 'styled-components';
 import Typography from '@mui/material/Typography';
 import { HotelCards } from '../../../components/Hotels/HotelCards';
 import HotelRooms from '../../../components/Hotels/RoomsContainer';
+import axios from 'axios';
 
-const genericObject = [
-  {
-    id: 1,
-    img: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1c/8d/a8/29/grand-oca-maragogi-resort.jpg?w=700&h=-1&s=1",
-    name: "Driven Resort",
-    type: "Single e Double",
-    availableVacancies: 60
-  },
-  {
-    id: 2,
-    img: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1c/8d/a8/29/grand-oca-maragogi-resort.jpg?w=700&h=-1&s=1",
-    name: "Driven Resort2",
-    type: "Single",
-    availableVacancies: 80
-  },
-  {
-    id: 3,
-    img: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1c/8d/a8/29/grand-oca-maragogi-resort.jpg?w=700&h=-1&s=1",
-    name: "Driven Resort",
-    type: "Single e Double",
-    availableVacancies: 54
-  }
-];
 
 export default function Hotel() {
-  
+  const [hotels, setHotels] = useState([]);
   const [hotelSelected, setHotelSelected] = useState(0);
+
+  useEffect(() => {
+    const fetchHotels = async() => {
+        try {
+            // const token = localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData')).token : null;
+            const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE3NywiaWF0IjoxNjk3ODg0Mzc2fQ.qeGMHn16gUHdp5Rc7bZ6Yobrqv8hzo3aiJ4sBs6mRXg";
+  
+            const res = await axios.get(import.meta.env.VITE_API_URL + `/hotels`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            const data = res.data;
+
+            const hotels = await Promise.all(
+                data.map(async (hotel) => {
+                    const hotelRes = await axios.get(import.meta.env.VITE_API_URL + `/hotels/${hotel.id}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+                    return hotelRes.data;
+                })
+            );
+            setHotels(hotels);
+        } catch (error) {
+            console.error("Erro ao buscar hotéis:", error);
+        }
+    }
+
+    fetchHotels();
+  }, [])
 
   return (
     <>
@@ -38,10 +48,12 @@ export default function Hotel() {
       <HotelsContainer>
         <h2>Primeiro, escolha seu hotel</h2>
         <HotelsWrapper>
-          {genericObject.map((hotel)=><HotelCards key={hotel.id} hotel={hotel} setHotelSelected={setHotelSelected} hotelSelected={hotelSelected} />)}
+          {hotels.map((hotel)=><HotelCards key={hotel.id} hotel={hotel} setHotelSelected={setHotelSelected} hotelSelected={hotelSelected} />)}
         </HotelsWrapper>
       </HotelsContainer>
-      {(hotelSelected != 0) && <HotelRooms/>} 
+      {(hotelSelected != 0) && (
+        <HotelRooms rooms={hotels.find((hotel) => hotel.id === hotelSelected).Rooms} />
+      )} 
     </>
   );
 

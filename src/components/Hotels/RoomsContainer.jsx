@@ -1,71 +1,34 @@
 import styled from "styled-components";
 import RoomCard from "./RoomCard";
 import { useState } from "react";
+import axios from "axios";
 
-const genericRooms = [
-    {
-        id: 1,
-        number: "101",
-        capacity: 2,
-        occupiedVacancies: 0,
-    },
-    {
-        id: 2,
-        number: "101",
-        capacity: 2,
-        occupiedVacancies: 0,
-    },
-    { 
-        id: 3,
-        number: "101",
-        capacity: 1,
-        occupiedVacancies: 0,
-    },
-    {
-        id: 4,
-        number: "101",
-        capacity: 2,
-        occupiedVacancies: 0,
-    },
-    {
-        id: 5,
-        number: "101",
-        capacity: 1,
-        occupiedVacancies: 0,
-    },
-    {
-        id: 6,
-        number: "101",
-        capacity: 2,
-        occupiedVacancies: 1,
-    },
-    {
-        id: 7,
-        number: "101",
-        capacity: 3,
-        occupiedVacancies: 2,
-    },
-    {
-        id: 8,
-        number: "101",
-        capacity: 2,
-        occupiedVacancies: 2,
-    },
-
-]
-
-export default function HotelRooms() {
+export default function HotelRooms( { rooms }) {
     const [roomSelected, setRoomSelected ] = useState(0);
+    // const token = localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData')).token : null;
+    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE3NywiaWF0IjoxNjk3ODg0Mzc2fQ.qeGMHn16gUHdp5Rc7bZ6Yobrqv8hzo3aiJ4sBs6mRXg";
 
     function submitRoomId(){
-        console.log(roomSelected);
+        if (roomSelected === 0) return;
+        console.log(roomSelected, token);
+        axios.post(import.meta.env.VITE_API_URL + `/booking`, { roomId: roomSelected }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        .then((response) => {
+            console.log("Reserva feita com sucesso:", response.data)
+        })
+        .catch((error) => {
+            console.error("Erro ao reservar quarto:", error)
+        })
     }
 
     return (
         <RoomsContainer>
             <h2>Ótima pedida! Agora escolha seu quarto:</h2>
             <RoomsWrapper>
-                {genericRooms.map((room) => 
+                {rooms.map((room) => 
                     <RoomCard 
                         key={room.id} room={room} 
                         setRoomSelected={setRoomSelected} roomSelected={roomSelected} 
