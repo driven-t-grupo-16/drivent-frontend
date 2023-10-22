@@ -42,7 +42,7 @@ export default function RoomCard({ room, setRoomSelected, roomSelected }) {
     return (
         <CardRoom
             id={room.id}
-            fullcapacity={(fullColor(room.capacity, room.Booking.length))}
+            fullcapacity={fullColor(room.capacity, room.Booking.length)}
             selected={isSelected(room.id, roomSelected)}
             onClick={selectRoom}
         >
