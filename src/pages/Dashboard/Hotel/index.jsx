@@ -56,7 +56,6 @@ export default function Hotel() {
       )} 
     </>
   );
-
 }
 
 const StyledTypography = styled(Typography)`

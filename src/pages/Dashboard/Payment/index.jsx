@@ -1,43 +1,98 @@
+/* eslint-disable no-unused-vars */
 import Typography from '@mui/material/Typography';
 import styled from 'styled-components';
+import useEnrollment from '../../../hooks/api/useEnrollment';
+import { CardButton } from '../../../components/Dashboard/Payment';
+import { useState } from 'react';
+import { createTicket} from '../../../services/ticketApi';
+import useToken from '../../../hooks/useToken';
 
 export default function Payment() {
+  const { enrollment } = useEnrollment();
+  const [ticketType, setTicketType] = useState('');
+  const [includesHotel, setIncludesHotel] = useState(null);
+  const [total, setTotal] = useState(0);
+  const token = useToken();
 
-  function teste(){
-    console.log("oiii");
+  async function bookTickect(){
+    if(ticketType === 'Online'){
+      console.log(1);
+      console.log(await createTicket(token, 1));
+    }else if(ticketType === 'Presencial' && includesHotel === false){
+      console.log(2);
+      console.log(await createTicket(token, 2));
+    }else if(ticketType === 'Presencial' && includesHotel === true){
+      console.log(3);
+      console.log(await createTicket(token, 3));
+    }
   }
+
   
-  return (
+  return (enrollment ? (
     <>
       <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
       <SubTitle>Primeiro, escolha sua modalidade de ingresso</SubTitle>
       <ContainerCard>
-        <Card onClick={ () => teste()}>
-          <p>Presencial</p>
-          <span>R$ 200</span>
-        </Card>
-        <Card>
-          <p>Online</p>
-          <span>R$ 100</span>
-        </Card>
+        <CardButton
+          total = {total}
+          setTotal = {setTotal}
+          setTicketType={setTicketType} 
+          setIncludesHotel={setIncludesHotel} 
+          ticketType={ticketType} 
+          text='Presencial' 
+          price={250} />
+        <CardButton
+          total = {total}
+          setTotal = {setTotal}
+          setTicketType={setTicketType} 
+          setIncludesHotel={setIncludesHotel} 
+          ticketType={ticketType} 
+          text='Online' 
+          price={100} />
       </ContainerCard>
-      <SubTitle>Ótimo! Agora escolha sua modalidade de hospedagem</SubTitle>
-      <ContainerCard>
-        <Card>
-          <p>Sem Hotel</p>
-          <span>+R$ 0</span>
-        </Card>
-        <Card>
-          <p>Com Hotel</p>
-          <span>+R$ 150</span>
-        </Card>
-      </ContainerCard>
-      <SubTitle>Fechado! O total ficou em <span>R$ 600</span>. Agora é só confirmar:</SubTitle>
-      <ConfirmButton>
-        <TextButton>RESERVAR INGRESSO</TextButton>
-      </ConfirmButton>
-    </>
-    
+      {ticketType === 'Presencial' ? (<>
+        <SubTitle>Ótimo! Agora escolha sua modalidade de hospedagem</SubTitle>
+        <ContainerCard>
+          <CardButton
+            total = {total}
+            setTotal = {setTotal} 
+            setIncludesHotel={setIncludesHotel} 
+            includesHotel={includesHotel} 
+            text='Sem hotel' 
+            price={0} />
+          <CardButton
+            total = {total}
+            setTotal = {setTotal}
+            setIncludesHotel={setIncludesHotel} 
+            includesHotel={includesHotel} 
+            text='Com hotel'
+            price={350} />
+        </ContainerCard>
+      </>) : null
+      }
+      {ticketType === 'Online' ? 
+      (<>
+        <SubTitle>Fechado! O total ficou em <span>R$ {total}</span>. Agora é só confirmar:</SubTitle>
+        <ConfirmButton>
+          <TextButton onClick={() => bookTickect()}>RESERVAR INGRESSO</TextButton>
+        </ConfirmButton>
+      </>) : includesHotel !== null && 
+      (<>
+        <SubTitle>Fechado! O total ficou em <span>R$ {total}</span>. Agora é só confirmar:</SubTitle>
+        <ConfirmButton>
+          <TextButton onClick={() => bookTickect()}>RESERVAR INGRESSO</TextButton>
+        </ConfirmButton>
+      </>)}
+    </>)
+    :
+    (<>
+      <StyledTypography variant="h4">Ingresso e pagamento</StyledTypography>
+      <ContainerText>
+        <SubTitle>
+          Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso
+        </SubTitle>
+      </ContainerText>
+    </>)
   );
 }
 
@@ -46,13 +101,19 @@ const StyledTypography = styled(Typography)`
   margin-bottom: 20px!important;
 `;
 
+const ContainerText = styled.div`
+margin: auto;
+height: 400px;
+text-align: center;
+display: flex;
+align-items: center;`;
+
 const SubTitle = styled(Typography)`
   color: #8E8E8E;
-  font-size: 20px;
+  font-size:  20px !important;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-
   span{
     font-weight: 700;
   }
@@ -64,33 +125,6 @@ const ContainerCard = styled.div`
   gap:24px;
   margin-top: 17px;
   margin-bottom: 44px;
-`
-
-const Card = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  width: 145px;
-  height: 145px;
-  flex-shrink: 0;
-  border-radius: 20px;
-  border: 1px solid #CECECE;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-  text-align: center;
-  cursor: pointer;
-
-  p{
-    color: #454545;
-    font-size: 16px;
-  }
-
-  span{
-    color: #898989;
-    font-size: 14px;
-  }
 `
 
 const ConfirmButton = styled.button`
