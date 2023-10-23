@@ -12,7 +12,7 @@ export default function Hotel() {
   const [hotelSelected, setHotelSelected] = useState(0);
   const [paymentConfirmed, setPaymentConfirmed] = useState(true);
   const [includesHotel, setIncludesHotel] = useState(true);
-  const [haveHotel, setHaveHotel] = useState(undefined); // genericObject[0]
+  const [haveHotel, setHaveHotel] = useState(undefined);
 
   const fetchHotels = async () => {
     try {
