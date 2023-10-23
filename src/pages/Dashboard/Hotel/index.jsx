@@ -14,6 +14,45 @@ export default function Hotel() {
   const [includesHotel, setIncludesHotel] = useState(true);
   const [haveHotel, setHaveHotel] = useState(undefined); // genericObject[0]
 
+  const fetchHotels = async () => {
+    try {
+      const token = localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData')).token : null;
+
+      const res = await axios.get(import.meta.env.VITE_API_URL + `/hotels`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (res.data.booking) {
+        setHaveHotel(res.data.booking);
+      }
+
+      const data = res.data.hotels;
+
+      const mappedHotels = await Promise.all(
+        data.map(async (hotel) => {
+          const hotelRes = await axios.get(import.meta.env.VITE_API_URL + `/hotels/${hotel.id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          return hotelRes.data;
+        })
+      );
+      setHotels(mappedHotels);
+    } catch (error) {
+      console.error("Erro ao buscar hotéis:", error);
+      if (error.response.data.message === `You must purchase a ticket!` ||
+        error.response.data.message === `You must finish enrolling!` ||
+        error.response.data.message === `You must confirm payment before booking!`) setPaymentConfirmed(false);
+      if (error.response.data.message === `Your ticket doesn't require a hotel!`) setIncludesHotel(false);
+    }
+  }
+
+  useEffect(() => {
+    fetchHotels();
+  }, [])
+
 
   if (!paymentConfirmed || !includesHotel) {
     return (
@@ -32,41 +71,9 @@ export default function Hotel() {
 
   if (haveHotel) {
     return (
-      <MyReservation hotel={haveHotel} />
+      <MyReservation data={haveHotel} hotels={hotels} fetchHotels={fetchHotels} />
     );
   }
-
-  useEffect(() => {
-    const fetchHotels = async() => {
-        try {
-            // const token = localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData')).token : null;
-            const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE3NywiaWF0IjoxNjk3ODg0Mzc2fQ.qeGMHn16gUHdp5Rc7bZ6Yobrqv8hzo3aiJ4sBs6mRXg";
-  
-            const res = await axios.get(import.meta.env.VITE_API_URL + `/hotels`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            const data = res.data;
-
-            const hotels = await Promise.all(
-                data.map(async (hotel) => {
-                    const hotelRes = await axios.get(import.meta.env.VITE_API_URL + `/hotels/${hotel.id}`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    });
-                    return hotelRes.data;
-                })
-            );
-            setHotels(hotels);
-        } catch (error) {
-            console.error("Erro ao buscar hotéis:", error);
-        }
-    }
-
-    fetchHotels();
-  }, [])
 
   return (
     <>
@@ -74,12 +81,12 @@ export default function Hotel() {
       <HotelsContainer>
         <h2>Primeiro, escolha seu hotel</h2>
         <HotelsWrapper>
-          {hotels.map((hotel)=><HotelCards key={hotel.id} hotel={hotel} setHotelSelected={setHotelSelected} hotelSelected={hotelSelected} />)}
+          {hotels.map((hotel) => <HotelCards key={hotel.id} hotel={hotel} setHotelSelected={setHotelSelected} hotelSelected={hotelSelected} />)}
         </HotelsWrapper>
       </HotelsContainer>
       {(hotelSelected != 0) && (
-        <HotelRooms rooms={hotels.find((hotel) => hotel.id === hotelSelected).Rooms} />
-      )} 
+        <HotelRooms rooms={hotels.find((hotel) => hotel.id === hotelSelected).Rooms} fetchHotels={fetchHotels} />
+      )}
     </>
   );
 

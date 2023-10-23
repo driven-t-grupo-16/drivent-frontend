@@ -46,7 +46,7 @@ export default function RoomCard({ room, setRoomSelected, roomSelected }) {
             selected={isSelected(room.id, roomSelected)}
             onClick={selectRoom}
         >
-            <h1>{room.id}</h1>
+            <h1>{room.name}</h1>
             {renderCapacityIcons(room.capacity, room.Booking.length)}
         </CardRoom>
     );
