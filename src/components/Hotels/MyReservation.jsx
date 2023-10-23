@@ -1,31 +1,71 @@
 import styled from "styled-components";
-import { HotelsContainer, StyledTypography } from "../../pages/Dashboard/Hotel";
-import { HotelCard } from "./HotelCards";
-import { SubmitRoom } from "./RoomsContainer";
+import { HotelsContainer, StyledTypography, HotelsWrapper } from "../../pages/Dashboard/Hotel";
+import { HotelCard, HotelCards } from "./HotelCards";
+import HotelRooms, { SubmitRoom } from "./RoomsContainer";
+import { useState } from "react";
 
-export function MyReservation({hotel}){
-    
-    function changeRoom(){
-        console.log("MUDAR");
-    }
-    
-    return (
-        <>
-        <StyledTypography variant="h4">Escolha de hotel e quarto</StyledTypography>
-        <HotelsContainer>
-          <h2>Você já escolheu seu quarto:</h2>
+export function MyReservation({ data, hotels, fetchHotels }) {
+  console.log(data);
+  const hotel = data.booking.Room.Hotel;
+  let occupants = "Você";
+  if (data.others.length > 0) occupants += ` e mais ${data.others.length}`
+
+  let roomType;
+  switch (data.booking.Room.capacity) {
+    case 1:
+      roomType = "Single";
+      break;
+    case 2:
+      roomType = "Double";
+      break;
+    case 3:
+      roomType = "Triple";
+      break;
+    default:
+      roomType = "Special";
+      break;
+  }
+
+  const [changing, setChanging] = useState(false);
+  const [hotelSelected, setHotelSelected] = useState(0);
+  function toggleChange() {
+    if (changing === true) setHotelSelected(0);
+    setChanging(!changing);
+  }
+
+  return (
+    <>
+      <StyledTypography variant="h4">Escolha de hotel e quarto</StyledTypography>
+      <HotelsContainer>
+        <h2>Você já escolheu seu quarto:</h2>
+        {changing ? (
+          <HotelsWrapper>
+            {hotels.map((hotel) => <HotelCards key={hotel.id} hotel={hotel} setHotelSelected={setHotelSelected} hotelSelected={hotelSelected} />)}
+          </HotelsWrapper>
+        ) : (
           <HotelCard id={hotel.id}>
-            <img src={hotel.img} />
+            <img src={hotel.image} />
             <h1>{hotel.name}</h1>
             <h2>Quarto reservado</h2>
-            <p>101 (Double)</p>
+            <p>{data.booking.Room.name} ({roomType})</p>
             <h2>Pessoas no seu quarto</h2>
-            <p>Você e mais 1</p>
+            <p>{occupants}</p>
           </HotelCard>
-          <EditButton onClick={changeRoom}>TROCAR DE QUARTO</EditButton>
-        </HotelsContainer>
-      </>
-    );
+        )}
+
+        <EditButton onClick={toggleChange}>TROCAR DE QUARTO</EditButton>
+
+        {(hotelSelected != 0 && changing) && (
+          <HotelRooms rooms={hotels.find((hotel) => hotel.id === hotelSelected).Rooms}
+            bookingId={data.booking.id}
+            fetchHotels={fetchHotels}
+            changing={changing}
+            setChanging={setChanging}
+          />
+        )}
+      </HotelsContainer>
+    </>
+  );
 }
 
 export const EditButton = styled(SubmitRoom)`
