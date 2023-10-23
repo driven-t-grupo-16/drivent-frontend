@@ -4,13 +4,16 @@ import useEnrollment from '../../../hooks/api/useEnrollment';
 import 'react-credit-cards-2/dist/es/styles-compiled.css';
 import { createTicket } from '../../../services/ticketApi';
 import { createPayment } from "../../../services/paymentApi"
+import useTicket from '../../../hooks/api/useTicket';
 import Typography from '@mui/material/Typography';
 import { FaCheckCircle } from 'react-icons/fa';
 import useToken from '../../../hooks/useToken';
-import Cards from 'react-credit-cards-2';
+import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import Cards from 'react-credit-cards-2';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
+
 
 export default function Payment() {
   const { enrollment } = useEnrollment();
@@ -19,14 +22,17 @@ export default function Payment() {
   const [total, setTotal] = useState(0);
   const token = useToken();
   const [ticket, setTicket] = useState();
+  const navigate = useNavigate();
+  let ticketInit = useTicket().ticket;
 
   useEffect(() => {
-    console.log(ticket)
+    console.log(ticket);
+
   }, [ticket])
 
   async function bookTicket() {
     if (ticketType === 'Online') {
-      const newTicket  = await createTicket(token, 1);
+      const newTicket = await createTicket(token, 1);
       setTicket(newTicket)
 
     } else if (ticketType === 'Presencial' && includesHotel === false) {
@@ -34,9 +40,12 @@ export default function Payment() {
       setTicket(newTicket);
 
     } else if (ticketType === 'Presencial' && includesHotel === true) {
-      const newTicket  = await createTicket(token, 3);
+      const newTicket = await createTicket(token, 3);
       setTicket(newTicket)
     }
+    toast('Processando Ticket')
+    setTimeout(() => navigate('/dashboard/subscription'), 3000);
+    setTimeout(() => navigate('/dashboard/payment'), 3001);
   }
 
 
@@ -70,9 +79,9 @@ export default function Payment() {
       if (Number(state.expiry.substring(2, 4)) < 23) { return toast('Ano invalido para data de vencimento') }
       if (state.cvc.length !== 3) { return toast('Por favor use 3 dígitos para o cvc') }
 
-      toast('processando pagamento')
+      toast('Processando pagamento')
       const payload = {
-        ticketId: ticket.id,
+        ticketId: ticketInit.id,
         cardData: {
           issuer: "issuer",
           number: state.number,
@@ -83,7 +92,8 @@ export default function Payment() {
       };
 
       createPayment(token, payload);
-      setTimeout(window.location.reload(), 1000 );
+      setTimeout(() => navigate('/dashboard/subscription'), 3000);
+      setTimeout(() => navigate('/dashboard/payment'), 3001);
     }
 
     return (
@@ -179,13 +189,13 @@ export default function Payment() {
   }
 
   return (
-    ticket ? (ticket.status === "RESERVED" ?
+    ticketInit ? (ticketInit.status === "RESERVED" ?
       /* Ticket reserved: Payment Form */
       <>
         <SubTitle> Ingresso escolhido </SubTitle>
         <Card_Selected>
-          <p>{!ticket.TicketType.isRemote ? (ticket.TicketType.includesHotel ? "Presencial + Com hotel" : "Presencial + Sem hotel") : "Online"}</p>
-          <span>R$ {(ticket.TicketType.price)}</span>
+          <p>{!ticketInit.TicketType.isRemote ? (ticketInit.TicketType.includesHotel ? "Presencial + Com hotel" : "Presencial + Sem hotel") : "Online"}</p>
+          <span>R$ {(ticketInit.TicketType.price)}</span>
         </Card_Selected>
         <SubTitle> Pagamento </SubTitle>
         <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -197,8 +207,8 @@ export default function Payment() {
       <>
         <SubTitle> Ingresso escolhido </SubTitle>
         <Card_Selected>
-          <p>{!ticket.TicketType.isRemote ? (ticket.TicketType.includesHotel ? "Presencial + Com hotel" : "Presencial + Sem hotel") : "Online"}</p>
-          <span>R$ {(ticket.TicketType.price)}</span>
+          <p>{!ticketInit.TicketType.isRemote ? (ticketInit.TicketType.includesHotel ? "Presencial + Com hotel" : "Presencial + Sem hotel") : "Online"}</p>
+          <span>R$ {(ticketInit.TicketType.price)}</span>
         </Card_Selected>
         <SubTitle style={{ marginTop: '10px' }}> Pagamento </SubTitle>
         <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'row', gap: '10px', alignItems: 'center' }}>
