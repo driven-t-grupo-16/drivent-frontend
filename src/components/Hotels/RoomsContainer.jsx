@@ -5,7 +5,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from 'react-router-dom';
 
-export default function HotelRooms({ rooms, bookingId, fetchHotels, changing, setChanging }) {
+export default function HotelRooms({ rooms, fetchHotels, bookingId, changing, setChanging }) {
   const navigate = useNavigate();
   const [roomSelected, setRoomSelected] = useState(0);
   const token = localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData')).token : null;
@@ -14,8 +14,8 @@ export default function HotelRooms({ rooms, bookingId, fetchHotels, changing, se
     if (roomSelected === 0) {
       return toast('Selecione um quarto para fazer sua reserva!');
     }
-    const url = bookingId ? import.meta.env.VITE_API_URL + `/booking/${bookingId}` : import.meta.env.VITE_API_URL + `/booking`;
-    const method = bookingId ? 'put' : 'post';
+    const url = bookingId !== 0 ? import.meta.env.VITE_API_URL + `/booking/${bookingId}` : import.meta.env.VITE_API_URL + `/booking`;
+    const method = bookingId !== 0 ? 'put' : 'post';
 
     axios[method](url, { roomId: roomSelected }, {
       headers: {
@@ -49,7 +49,7 @@ export default function HotelRooms({ rooms, bookingId, fetchHotels, changing, se
         )}
       </RoomsWrapper>
 
-      <SubmitRoom onClick={submitRoomId}>{bookingId ? "ATUALIZAR RESERVA" : "RESERVAR QUARTO"}</SubmitRoom>
+      <SubmitRoom onClick={() => submitRoomId(bookingId)}>{bookingId !== 0 ? "ATUALIZAR RESERVA" : "RESERVAR QUARTO"}</SubmitRoom>
     </RoomsContainer>
   );
 }

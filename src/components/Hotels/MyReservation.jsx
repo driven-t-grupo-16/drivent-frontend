@@ -9,7 +9,6 @@ export function MyReservation({ data, hotels, fetchHotels }) {
   const hotel = data.booking.Room.Hotel;
   let occupants = "Você";
   if (data.others.length > 0) occupants += ` e mais ${data.others.length}`
-
   let roomType;
   switch (data.booking.Room.capacity) {
     case 1:
@@ -33,6 +32,7 @@ export function MyReservation({ data, hotels, fetchHotels }) {
     setChanging(!changing);
   }
 
+
   return (
     <>
       <StyledTypography variant="h4">Escolha de hotel e quarto</StyledTypography>
@@ -43,14 +43,16 @@ export function MyReservation({ data, hotels, fetchHotels }) {
             {hotels.map((hotel) => <HotelCards key={hotel.id} hotel={hotel} setHotelSelected={setHotelSelected} hotelSelected={hotelSelected} />)}
           </HotelsWrapper>
         ) : (
-          <HotelCard id={hotel.id}>
-            <img src={hotel.image} />
-            <h1>{hotel.name}</h1>
-            <h2>Quarto reservado</h2>
-            <p>{data.booking.Room.name} ({roomType})</p>
-            <h2>Pessoas no seu quarto</h2>
-            <p>{occupants}</p>
-          </HotelCard>
+          <HotelsWrapper>
+            <HotelCard id={hotel.id}>
+              <img src={hotel.image} />
+              <h1>{hotel.name}</h1>
+              <h2>Quarto reservado</h2>
+              <p>{data.booking.Room.name} ({roomType})</p>
+              <h2>Pessoas no seu quarto</h2>
+              <p>{occupants}</p>
+            </HotelCard>
+          </HotelsWrapper>
         )}
 
         <EditButton onClick={toggleChange}>TROCAR DE QUARTO</EditButton>
