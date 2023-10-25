@@ -1,8 +1,7 @@
-import styled from "styled-components";
-import { HotelsContainer, StyledTypography, HotelsWrapper } from "../../pages/Dashboard/Hotel";
-import { HotelCard, HotelCards } from "./HotelCards";
-import HotelRooms, { SubmitRoom } from "./RoomsContainer";
+import { HotelCards } from "./HotelCards";
+import HotelRooms from "./RoomsContainer";
 import { useState } from "react";
+import { EditButton, HotelsContainer, HotelsWrapper, StyledTypography, HotelCard } from ".";
 
 export function MyReservation({ data, hotels, fetchHotels }) {
   console.log(data);
@@ -69,9 +68,3 @@ export function MyReservation({ data, hotels, fetchHotels }) {
     </>
   );
 }
-
-export const EditButton = styled(SubmitRoom)`
-  font-size: 14px;
-  font-weight: 700;
-  color: #000000;
-`

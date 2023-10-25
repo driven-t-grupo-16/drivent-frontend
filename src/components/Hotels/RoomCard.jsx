@@ -1,5 +1,4 @@
-import styled from "styled-components";
-import { BsFillPersonFill, BsPerson } from 'react-icons/bs';
+import { CardRoom, Icon, IconContainer, IconSelected } from ".";
 
 export default function RoomCard({ room, setRoomSelected, roomSelected }) {
     function renderCapacityIcons(capacity, occupiedVacancies) {
@@ -51,38 +50,3 @@ export default function RoomCard({ room, setRoomSelected, roomSelected }) {
         </CardRoom>
     );
 }
-
-export const CardRoom = styled.div`
-    width: 190px;
-    height: 45px;
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    border: 1px solid #CECECE;
-    border-radius: 10px;
-    cursor: pointer;
-
-    > h1 {
-        color: #454545;
-        font-weight: 700;
-        font-size: 20px;
-    }
-
-    background-color: ${(props) => (props.fullcapacity === "true" ? "#CECECE" : props.selected ? "#FFEED2" : "transparent")};
-    color: ${(props) => (props.fullcapacity === "true" ? "#8C8C8C" : "#000000")};
-`;
-
-const IconContainer = styled.div`
-    display: flex;
-    justify-content: end;
-    width: auto;
-`;
-
-const IconSelected = styled(BsFillPersonFill)`
-    font-size: 27px;
-    color: ${(props) => (props.selected) ? "#FF4791" : "#000000"};
-`;
-
-const Icon = styled(BsPerson)`
-    font-size: 27px;
-`;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import styled from "styled-components";
+import { HotelCard } from ".";
 
 
 export function HotelCards({ hotel, hotelSelected, setHotelSelected }) {
@@ -40,39 +40,3 @@ export function HotelCards({ hotel, hotelSelected, setHotelSelected }) {
   );
 }
 
-export const HotelCard = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background-color: ${props => (props.selected == undefined) ? "#FFEED2" : (props.selected == props.id) ? '#FFEED2' : '#EBEBEB'};
-  width: 196px;
-  height: 264px;
-  padding: 16px 14px 0;
-  border-radius: 10px;
-  cursor: ${props => (props.selected == props.id) ? 'default' : 'pointer'};
-  
-  > img {
-    width: 168px;
-    height: 109px;
-    border-radius: 5px;
-    object-fit: cover;
-  }
-
-  > h1 {
-    color: #343434;
-    font-weight: 400;
-    font-size: 20px;
-    margin: 10px 0;
-  }
-  > h2 {
-    color: #3C3C3C;
-    font-weight: 700;
-    font-size: 12px;
-  }
-  > p {
-    color: #3C3C3C;
-    font-weight: 400;
-    font-size: 12px;
-    margin-bottom: 14px;
-  }
-`;
