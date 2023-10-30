@@ -1,5 +1,6 @@
 import { ActivityCardStyle, CloseIcon, EnterIcon, IconDiv, InfoDiv, RegisteredIcon } from ".";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 export function ActivityCard({ activity, registrations, fetchActivities }) {
     const { id, name, capacity } = activity;
@@ -20,9 +21,8 @@ export function ActivityCard({ activity, registrations, fetchActivities }) {
 
     async function submitActivity() {
         console.log("ok");
-        if (isFull) {
-            return toast('Essa atividade está lotada!');
-        }
+        if (userRegistered) return toast('Você já está inscrito nessa atividade!');
+        if (isFull) return toast('Essa atividade está lotada!');
 
         await axios.post(import.meta.env.VITE_API_URL + `/activities`, { activityId: id }, {
             headers: {
@@ -36,11 +36,12 @@ export function ActivityCard({ activity, registrations, fetchActivities }) {
             .catch((error) => {
                 console.error("Erro ao registrar atividade:", error)
                 console.log(error.response?.data);
+                toast(error.response?.data.message);
             })
     }
 
     function Icon() {
-        if (userRegistered){
+        if (userRegistered) {
             return (
                 <IconDiv full={"Inscrito"} registered={"true"}>
                     <RegisteredIcon />
@@ -72,7 +73,7 @@ export function ActivityCard({ activity, registrations, fetchActivities }) {
         <ActivityCardStyle height={`${height * 84}px`} registered={(userRegistered != 0) ? "true" : "false"} onClick={() => submitActivity()}>
             <InfoDiv>
                 <h1>{name}</h1>
-                <h2>{startTime + " - " + endTime}</h2>
+                <p>{startTime + " - " + endTime}</p>
             </InfoDiv>
             <Icon />
         </ActivityCardStyle>

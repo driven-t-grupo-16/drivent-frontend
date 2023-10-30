@@ -92,8 +92,8 @@ export default function Payment() {
       };
 
       createPayment(token, payload);
-      setTimeout(() => navigate('/dashboard/subscription'), 3000);
-      setTimeout(() => navigate('/dashboard/payment'), 3001);
+      setTimeout(() => navigate('/dashboard/hotel'), 3000);
+      // setTimeout(() => navigate('/dashboard/payment'), 3001);
     }
 
     return (
