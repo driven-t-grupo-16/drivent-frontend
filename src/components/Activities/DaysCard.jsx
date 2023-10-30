@@ -1,27 +1,33 @@
 import { useEffect, useState } from "react";
 import { DayCard } from ".";
 
-export default function CardDay(props){
-    const {date, isDaySelected, setIsDaySelected} = props;
-
+export default function CardDay(props) {
+    const { dateKey, daySelected, setDaySelected } = props;
     const [selected, setSelected] = useState(false);
 
-    useEffect(()=>{
-        isSelected();
-    }, [isDaySelected]);
+    const [year, month, day] = dateKey.split('-');
+    const ddmm = day + "/" + month;
 
-    function isSelected(){
-        if(date.id == isDaySelected) {
+    const dias = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+    const date = new Date(dateKey);
+    const dia = dias[date.getUTCDay()];
+
+    useEffect(() => {
+        isSelected();
+    }, [daySelected]);
+
+    function isSelected() {
+        if (dateKey == daySelected) {
             setSelected(true);
         }
-        else{
+        else {
             setSelected(false);
         }
     }
 
     return (
-        <DayCard onClick={() => setIsDaySelected(date.id)} selected={selected}>
-            {date.day}
+        <DayCard onClick={() => setDaySelected(dateKey)} selected={selected}>
+            {dia}, {ddmm}
         </DayCard>
     );
 }

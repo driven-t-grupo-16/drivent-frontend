@@ -1,10 +1,45 @@
 import { ActivityCardStyle, CloseIcon, EnterIcon, IconDiv, InfoDiv } from ".";
+import axios from "axios";
 
-export function ActivityCard({ activity, height }) {
-    const { id, name, startsAt, endsAt, capacity, reservations } = activity;
+export function ActivityCard({ activity, registrations, fetchActivities }) {
+    const { id, name, capacity } = activity;
+
+    const n = registrations.filter(i => i.activityId === activity.id).length;
+    let isFull = (capacity - n == 0);
+
+    const userId = localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData')).user.id : null;
+    const token = localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData')).token : null;
+
+    const userRegistered = registrations.filter(i => i.userId === userId && id === i.activityId).length;
+
+    console.log(userRegistered);
+
+    const startTime = activity.startTime.slice(-8, -3);
+    const endTime = activity.endTime.slice(-8, -3);
+    const height = Number(endTime.slice(0, 2)) - Number(startTime.slice(0, 2));
+
+    async function submitActivity() {
+        console.log("ok");
+        if (isFull) {
+            return toast('Essa atividade está lotada!');
+        }
+
+        await axios.post(import.meta.env.VITE_API_URL + `/activities`, { activityId: id }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then((response) => {
+                console.log("Atividade registrada com sucesso:", response.data);
+                fetchActivities();
+            })
+            .catch((error) => {
+                console.error("Erro ao registrar atividade:", error)
+                console.log(error.response?.data);
+            })
+    }
 
     function Icon() {
-        let isFull = (capacity - reservations == 0);
         if (isFull) {
             return (
                 <IconDiv full={String(isFull)} >
@@ -17,7 +52,7 @@ export function ActivityCard({ activity, height }) {
             return (
                 <IconDiv full={String(isFull)} >
                     <EnterIcon />
-                    <p>{String(capacity - reservations) + "vagas"}</p>
+                    <p>{String(capacity - n) + " vagas"}</p>
                 </IconDiv>
             )
         }
@@ -25,10 +60,10 @@ export function ActivityCard({ activity, height }) {
 
 
     return (
-        <ActivityCardStyle height={height}>
+        <ActivityCardStyle height={`${height * 84}px`} onClick={() => submitActivity()}>
             <InfoDiv>
                 <h1>{name}</h1>
-                <h2>{startsAt + " - " + endsAt}</h2>
+                <h2>{startTime + " - " + endTime}</h2>
             </InfoDiv>
             <Icon />
         </ActivityCardStyle>
