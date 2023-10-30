@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import Typography from '@mui/material/Typography';
 import { HotelCards } from '../../../components/Hotels/HotelCards';
 import HotelRooms from '../../../components/Hotels/RoomsContainer';
 import { MyReservation } from '../../../components/Hotels/MyReservation';
 import axios from 'axios';
+import { ErrorContainer, HotelsContainer, HotelsWrapper, StyledTypography } from '../../../components/Hotels';
 
 
 export default function Hotel() {
@@ -12,7 +11,7 @@ export default function Hotel() {
     const [hotelSelected, setHotelSelected] = useState(0);
     const [paymentConfirmed, setPaymentConfirmed] = useState(true);
     const [includesHotel, setIncludesHotel] = useState(true);
-    const [haveHotel, setHaveHotel] = useState(undefined); // genericObject[0]
+    const [haveHotel, setHaveHotel] = useState(undefined);
 
     const fetchHotels = async () => {
         try {
@@ -91,51 +90,3 @@ export default function Hotel() {
     );
 
 }
-
-export const StyledTypography = styled(Typography)`
-  margin-bottom: 20px!important;
-`;
-
-export const HotelsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  margin: 20px 0;
-
-  > h2 {
-    width: 464px;
-    font-weight: 400;
-    font-size: 20px;
-    margin: 10px 0 15px;
-    color: #8E8E8E;
-  }
-
-`;
-
-export const HotelsWrapper = styled.div`
-  display: flex;
-  width: 100%;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin-top: 15px;
-`;
-
-export const ErrorContainer = styled.div`
-  display: flex;
-  width: 100%;
-  height: 500px;
-  align-items: center;
-  justify-content: center;
-  margin: 20px 0;
-  text-align: center;
-  font-weight: 400;
-  font-size: 20px;
-  color: #8E8E8E;
-
-  > h2 {
-    width: 550px;
-  }
-  > h3 {
-    width: 480px;
-  }
-`;
