@@ -30,6 +30,7 @@ export default function HotelRooms({ rooms, fetchHotels, bookingId, changing, se
           toast("Reserva atualizada com sucesso!");
         } else {
           toast("Reserva feita com sucesso!");
+          navigate('/dashboard/activities');
         }
       })
       .catch((error) => {

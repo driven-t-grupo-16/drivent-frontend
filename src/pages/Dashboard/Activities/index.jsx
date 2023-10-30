@@ -5,46 +5,12 @@ import CardDay from "../../../components/Activities/DaysCard";
 import { ActivityCard } from "../../../components/Activities/ActivityCard";
 import axios from "axios";
 
-const genericDays = [
-    {
-        id: 1,
-        day: "Sexta, 22/10" //por enquanto vou deixar como uma string, pq ainda n sei como vai vir essa info
-    },
-    {
-        id: 2,
-        day: "Sábado, 23/10"
-    },
-    {
-        id: 3,
-        day: "Sexta, 22/10"
-    }
-]
-const genericActivities = [
-    {
-        id: 1,
-        name: "Minecraft: montando o PC ideal",
-        startsAt: "09:00",
-        endsAt: "10:00",
-        capacity: 20,
-        reservations: 18
-    },
-    {
-        id: 2,
-        name: "Minecraft: montando o PC ideal",
-        startsAt: "09:00",
-        endsAt: "10:00",
-        capacity: 20,
-        reservations: 20
-    }
-]
-
 export default function Activities() {
     const [activities, setActivities] = useState({});
     const [registrations, setRegistrations] = useState([]);
     const [daySelected, setDaySelected] = useState({});
     const [errorMessage, setError] = useState("");
 
-    console.log(maior);
     const fetchActivities = async () => {
         try {
             const token = localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData')).token : null;
