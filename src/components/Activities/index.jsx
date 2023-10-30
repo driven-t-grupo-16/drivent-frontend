@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { IoEnterOutline } from 'react-icons/io5';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
+import { GoIssueClosed } from 'react-icons/go';
 
 export const DaysContainer = styled.div`
     display: flex;
@@ -65,7 +66,7 @@ export const ActivityCardStyle = styled.div`
     padding: 10px 0 10px 9px;
     border-radius: 5px;
     cursor: pointer;
-    background-color: #F1F1F1;
+    background-color: ${props => (props.registered == "true") ? "#D0FFDB" :  "#F1F1F1"};    
 `
 export const InfoDiv = styled.div`
     width: 199px;
@@ -93,7 +94,7 @@ export const IconDiv = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border-left: 1px solid #CFCFCF;
+    border-left: 1px solid ${props => (props.registered == "true") ? "#99E8A1" :  "#CFCFCF"};
     > p {
         font-size: 9px;
         font-weight: 400;
@@ -109,4 +110,9 @@ export const CloseIcon = styled(AiOutlineCloseCircle)`
     font-size: 20px;
     color: #CC6666;
     margin: 2px;
+`;
+export const RegisteredIcon = styled(GoIssueClosed)`
+  font-size: 20px;
+  color: #078632;
+  margin: 2px;
 `;

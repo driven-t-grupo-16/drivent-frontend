@@ -1,4 +1,4 @@
-import { ActivityCardStyle, CloseIcon, EnterIcon, IconDiv, InfoDiv } from ".";
+import { ActivityCardStyle, CloseIcon, EnterIcon, IconDiv, InfoDiv, RegisteredIcon } from ".";
 import axios from "axios";
 
 export function ActivityCard({ activity, registrations, fetchActivities }) {
@@ -40,6 +40,15 @@ export function ActivityCard({ activity, registrations, fetchActivities }) {
     }
 
     function Icon() {
+        if (userRegistered){
+            return (
+                <IconDiv full={"Inscrito"} registered={"true"}>
+                    <RegisteredIcon />
+                    <p>Inscrito</p>
+                </IconDiv>
+            )
+        }
+
         if (isFull) {
             return (
                 <IconDiv full={String(isFull)} >
@@ -60,7 +69,7 @@ export function ActivityCard({ activity, registrations, fetchActivities }) {
 
 
     return (
-        <ActivityCardStyle height={`${height * 84}px`} onClick={() => submitActivity()}>
+        <ActivityCardStyle height={`${height * 84}px`} registered={(userRegistered != 0) ? "true" : "false"} onClick={() => submitActivity()}>
             <InfoDiv>
                 <h1>{name}</h1>
                 <h2>{startTime + " - " + endTime}</h2>
